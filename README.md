@@ -7,7 +7,7 @@ sdk: streamlit
 sdk_version: 1.32.0
 app_file: app.py
 pinned: false
-python_version: "3.10"
+python_version: "3.11"
 ---
 
 # 🐟 Klasifikasi Kesegaran Ikan — Streamlit App
