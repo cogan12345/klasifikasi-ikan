@@ -1,8 +1,10 @@
+import os
+os.environ["KERAS_BACKEND"] = "tensorflow"
+
 import streamlit as st
 import numpy as np
 from PIL import Image
-import tensorflow as tf
-import os
+import keras
 
 # ─── Konfigurasi Halaman ───────────────────────────────────────
 st.set_page_config(
@@ -69,11 +71,10 @@ st.markdown("""
 # ─── Load Model ────────────────────────────────────────────────
 @st.cache_resource
 def load_model():
-    """Muat model dari file .keras — sesuaikan path jika perlu."""
-    model_path = "model_final.keras"          # ← sesuaikan path model kamu
+    model_path = "model_final.keras"
     if not os.path.exists(model_path):
         return None
-    return tf.keras.models.load_model(model_path)
+    return keras.saving.load_model(model_path)
 
 
 # ─── Fungsi Prediksi ───────────────────────────────────────────
@@ -82,7 +83,7 @@ def predict(model, img: Image.Image):
     img_resized = img.convert("RGB").resize((224, 224))
     arr = np.array(img_resized, dtype=np.float32) / 255.0
     arr = np.expand_dims(arr, axis=0)
-    prob = float(model.predict(arr, verbose=0)[0][0])
+    prob = float(model(arr, training=False).numpy()[0][0])
     # prob mendekati 1 → not fresh  |  prob mendekati 0 → fresh
     label = "not fresh" if prob >= 0.5 else "fresh"
     conf  = prob if prob >= 0.5 else 1.0 - prob
